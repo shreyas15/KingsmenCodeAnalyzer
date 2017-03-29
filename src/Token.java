@@ -19,14 +19,19 @@ public class Token {
 	
 	private static final Pattern VAR_BOUNDARY = Pattern.compile("(let|var)(.*?)\\=(.*?)\\;");
 	private static final Pattern VAR_BOUNDARY2 = Pattern.compile("(let|var)(.*?)\\;");
+	private static final Pattern FUNC_BOUNDARY1 = Pattern.compile("(var)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\=][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)]");
+	private static final Pattern FUNC_BOUNDARY2 = Pattern.compile("(var)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\=][\\s]{0,}[\\{][\\s]{0,}[\\\"][\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\\"][\\s]{0,}[\\:][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)][\\s]{0,}[\\{]");
+	private static final Pattern FUNC_BOUNDARY3 = Pattern.compile("(set)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\(][\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\)][\\s]{0,}[\\{]");
+	private static final Pattern FUNC_BOUNDARY4 = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)[\\.]([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\(][\\s]{0,}[\\)][\\s]{0,}[\\;]");
 	private static final Pattern IF_BOUNDARY = Pattern.compile("[\\t]{0,}[\\s]{0,}(if)[\\s]{0,}[\\(]{1,}[\\!]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\)]{1,}[\\n]{0,}[\\t]{0,}");
 	private static final Pattern IF_NOT = Pattern.compile("[\\t]{0,}[\\s]{0,}(if)[\\s]{0,}[\\(]{1,}[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\)]{1,}[\\n]{0,}[\\t]{0,}[\\{]");
 	private static final Pattern ELSE_BOUNDARY = Pattern.compile("[\\t]{0,}[\\}]{0,}[\\t]{0,}[\\s]{0,}(else)[\\s]{0,}[\\n]{0,}[\\t]{0,}");
 	private static final Pattern ELSE_NOT = Pattern.compile("[\\t]{0,}[\\}]{0,}[\\t]{0,}[\\s]{0,}(else)[\\s]{0,}[\\n]{0,}[\\t]{0,}([a-zA-Z_$][a-zA-Z0-9_$])*[\\s]{0,}[\\n]{0,}[\\t]{0,}[\\{]");
 	
 	public static Map<String, Integer> varNames = new HashMap<String, Integer>(); 
+	public static Map<String, Integer> funcNames = new HashMap<String, Integer>(); 
 	
-	 public Map<String, Integer> getMap() {
+	public Map<String, Integer> getMap() {
 	       return varNames;
 	 }
 	
@@ -69,6 +74,13 @@ public class Token {
 		else return;
 	}
 	
+	public void getFuncReport() {
+		boolean flag = funcNames.containsKey(this.objName) ? (funcNames.get(this.objName) == 2) ? true : false : false;
+		if (flag)
+			System.out.println(this.objName + " : " + "is an undeclared function"  + " at line " + this.lineNumber);
+		else return;		
+	}
+
 	public void registerVariables(){
 		Matcher matcher = VAR_BOUNDARY.matcher(this.line);
 		Matcher matcher2 = VAR_BOUNDARY2.matcher(this.line);
@@ -154,6 +166,11 @@ public class Token {
 		}
 	}
 
+	
+	public void registerFunctions() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
 

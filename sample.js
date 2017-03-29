@@ -15,8 +15,9 @@
 	
 	if(!foo)
 		foo3= 3;
-	else
+	else if(1){
 		foo3 = 4;
+	}
 	var isMobile = {
 		Android: function() {
 			return navigator.userAgent.match(/Android/i);

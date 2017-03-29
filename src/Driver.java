@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 //import java.io.FileNotFoundException;
+//import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,12 +17,37 @@ public class Driver {
 	public static void main(String[] args) throws IOException{
 		
 		String fileName = args[0];
+		System.out.println("==============================");
+		System.out.println("        WARNING REPORT        ");
+		System.out.println("==============================\n");
+		System.out.println("------Unused Variables------\n");
 		findUnusedVariables(fileName);
-
+		
+		System.out.println("\n------One Line if/else------\n");
 		findOneLineIfElse(fileName);
 		
+		System.out.println("\n------Undeclared Function Calls------\n");
+		findUndeclaredFuncts(fileName);
 	}
 	
+	private static void findUndeclaredFuncts(String fileName) throws IOException {
+		List <Token> functTokens = new ArrayList <Token>();
+		BufferedReader br = new BufferedReader(new FileReader(fileName));
+		String eachLine = "";
+		int lineNumber = 0;
+		while((eachLine = br.readLine()) != null){
+			functTokens.add(new Token(eachLine.trim(), ++lineNumber));
+		}
+		for(Token t:functTokens){
+			t.registerFunctions();
+		}
+		updateFuncMap(fileName);
+		for (Token t: functTokens){
+			t.getFuncReport();
+		}
+		br.close();
+	}
+
 	private static void findOneLineIfElse(String fileName) throws IOException {
 		
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
@@ -54,14 +80,14 @@ public class Driver {
 		for(Token t:tokens){
 			t.registerVariables();
 		}
-		updateMap(fileName);
+		updateVarMap(fileName);
 		for (Token t: tokens){
 			t.getVarReport();
 		}
 		br.close();
 	}
 	
-	static void updateMap(String fileName) throws IOException{
+	static void updateVarMap(String fileName) throws IOException{
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		String eachLine = "";
 		while((eachLine = br.readLine()) != null){
@@ -74,4 +100,20 @@ public class Driver {
 		}
 		br.close();
 	}
+	
+	static void updateFuncMap(String fileName) throws IOException{
+		BufferedReader br = new BufferedReader(new FileReader(fileName));
+		String eachLine = "";
+		while((eachLine = br.readLine()) != null){
+			Matcher matcher = IDENTIFIER_RX.matcher(eachLine);
+			while (matcher.find()){
+				String found = matcher.group().trim();
+				int counter = Token.funcNames.containsKey(found)? Token.funcNames.get(found) : 0;
+				Token.funcNames.put(found, counter + 1);
+			}
+		}
+		br.close();
+	}
+
+
 }
