@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Token {
-	//String errorMessage = "";
+	
 	String line = "";
 	int lineNumber = -1;
 	int columnNumber = -1;
@@ -17,7 +17,6 @@ public class Token {
 	public Token (String line, int lineNum){
 		this.line = line;
 		this.objName = "";
-		//this.errorMessage = "";
 		this.lineNumber = lineNum;
 		this.columnNumber = -1;
 	}

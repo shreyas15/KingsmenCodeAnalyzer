@@ -19,15 +19,11 @@ public class Driver {
 		String eachLine = "";
 		int lineNumber = 0;
 		while((eachLine = br.readLine()) != null){
-			//System.out.println("Entered while");
 			tokens.add(new Token(eachLine.trim(), ++lineNumber));
 		}
 		for(Token t:tokens){
 			t.registerVariables();
 		}
-//		for (Token t: tokens){
-//			t.getReport();
-//		}
 		
 		br.close();
 	}
