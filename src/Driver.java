@@ -11,14 +11,29 @@ import java.util.List;
 
 public class Driver {
 	
-	private static final Pattern IDENTIFIER_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)"); 
+	private static final Pattern IDENTIFIER_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)"); //regex to find Identifiers.
 	
 	public static void main(String[] args) throws IOException{
 		
 		String fileName = args[0];
 		findUnusedVariables(fileName);
+		findOneLineIfElse(fileName);
 	}
 	
+	private static void findOneLineIfElse(String fileName) throws IOException {
+		List <Token> logicalTokens = new ArrayList <Token>();
+		BufferedReader br = new BufferedReader(new FileReader(fileName));
+		String eachLine = "";
+		int lineNumber = 0;
+		while((eachLine = br.readLine()) != null){
+			logicalTokens.add(new Token(eachLine.trim(), ++lineNumber));
+		}
+		for(Token t : logicalTokens){
+			t.findIfElse();
+		}
+		br.close();
+	}
+
 	static void findUnusedVariables(String fileName) throws IOException{
 		List <Token> tokens = new ArrayList <Token>();
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
@@ -32,7 +47,7 @@ public class Driver {
 		}
 		updateMap(fileName);
 		for (Token t: tokens){
-			t.getReport();
+			t.getVarReport();
 		}
 		br.close();
 	}
