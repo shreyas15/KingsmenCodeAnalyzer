@@ -16,6 +16,10 @@ public class Driver {
 	public static void main(String[] args) throws IOException{
 		
 		String fileName = args[0];
+		findUnusedVariables(fileName);
+	}
+	
+	static void findUnusedVariables(String fileName) throws IOException{
 		List <Token> tokens = new ArrayList <Token>();
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		String eachLine = "";

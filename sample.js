@@ -6,6 +6,15 @@
 	var foo2 = null;
 	var foo3;
 	
+	if (foo)
+		foo3 = 1;
+	else
+		foo3 = 2;
+	
+	if(!foo)
+		foo3= 3;
+	else
+		foo3 = 4;
 	var isMobile = {
 		Android: function() {
 			return navigator.userAgent.match(/Android/i);
