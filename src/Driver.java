@@ -17,21 +17,30 @@ public class Driver {
 		
 		String fileName = args[0];
 		findUnusedVariables(fileName);
+
 		findOneLineIfElse(fileName);
+		
 	}
 	
 	private static void findOneLineIfElse(String fileName) throws IOException {
-		List <Token> logicalTokens = new ArrayList <Token>();
+		
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
+		List <Token> logicalTokens = new ArrayList <Token>();
 		String eachLine = "";
 		int lineNumber = 0;
-		while((eachLine = br.readLine()) != null){
-			logicalTokens.add(new Token(eachLine.trim(), ++lineNumber));
+		try{
+			while((eachLine = br.readLine()) != null){
+				lineNumber += 1;
+				if (eachLine.contains("if") || eachLine.contains("else"))
+					logicalTokens.add(new Token(eachLine, fileName, lineNumber));
+			}
+			for(Token t : logicalTokens){
+				t.findIfElse();
+			}
 		}
-		for(Token t : logicalTokens){
-			t.findIfElse();
+		finally{
+			br.close();
 		}
-		br.close();
 	}
 
 	static void findUnusedVariables(String fileName) throws IOException{

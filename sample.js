@@ -7,7 +7,9 @@
 	var foo3;
 	
 	if (foo)
+	{
 		foo3 = 1;
+	}
 	else
 		foo3 = 2;
 	
