@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Token {
+public class Context {
 	
 	String line;
 	String objName;
@@ -17,6 +17,7 @@ public class Token {
 	String ifOrElse;
 	String fileName;
 	
+	private static final Pattern IDENTIFIER_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)"); //regex to find Identifiers.
 	private static final Pattern VAR_BOUNDARY = Pattern.compile("(let|var)(.*?)\\=(.*?)\\;");
 	private static final Pattern VAR_BOUNDARY2 = Pattern.compile("(let|var)(.*?)\\;");
 	private static final Pattern FUNCTION_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)[\\(][\\s]{0,}[\\)]"); //regex to find function names.
@@ -37,7 +38,7 @@ public class Token {
 	       return varNames;
 	 }
 	
-	public Token (){
+	public Context (){
 		this.line = "";
 		this.objName = "";
 		this.lineNumber = 0;
@@ -46,14 +47,14 @@ public class Token {
 		this.fileName = "";
 	}
 	
-	public Token (String line, int lineNum){
+	public Context (String line, int lineNum){
 		this.line = line;
 		this.objName = "";
 		this.lineNumber = lineNum;
 		this.columnNumber = 0;
 	}
 	
-	public Token (String line, String fileName, int lineNum){
+	public Context (String line, String fileName, int lineNum){
 		this.line = line;
 		this.fileName = fileName;
 		this.objName = "";
@@ -68,7 +69,7 @@ public class Token {
 		else return;
 	}
 	
-	public void getIfElseReport() {
+	private void getIfElseReport() {
 		if (this.ifOrElse.equals("if"))
 			System.out.println(this.line.trim() + " : " + "possibly a one line if"  + " at line " + this.lineNumber);
 		else if(this.ifOrElse.equals("else"))
@@ -209,7 +210,43 @@ public class Token {
 		}
 	}
 	
-
+	public static void getUndefFunctions(String fileName) throws IOException{
+		BufferedReader br = new BufferedReader(new FileReader(fileName));
+		String eachLine = "";
+		int lineNumber = 0;
+		while((eachLine = br.readLine()) != null){
+			lineNumber += 1;
+			Matcher matcher = FUNCTION_RX.matcher(eachLine);
+			while (matcher.find()){
+				String found = matcher.group().split("\\(")[0].trim();
+				boolean flag = Context.funcNames.containsKey(found)? true : false;
+				if (!flag && (!found.equals("function"))){
+					int counter = Context.undefNames.containsKey(found) ? Context.undefNames.get(found) : 0;
+					Context.undefNames.put(found, counter + 1);
+					System.out.println(found + " : " + "is possibly an undeclared function"  + " at line " + lineNumber);
+				}
+				else{
+					int counter = Context.funcNames.get(found) != null ? Context.funcNames.get(found) : 0;
+					Context.funcNames.put(found, counter + 1);
+				}
+			}
+		}
+		br.close();
+	}
+	
+	public static void updateVarMap(String fileName) throws IOException{
+		BufferedReader br = new BufferedReader(new FileReader(fileName));
+		String eachLine = "";
+		while((eachLine = br.readLine()) != null){
+			Matcher matcher = IDENTIFIER_RX.matcher(eachLine);
+			while (matcher.find()){
+				String found = matcher.group().trim();
+				int counter = Context.varNames.containsKey(found)? Context.varNames.get(found) : 0;
+				Context.varNames.put(found, counter + 1);
+			}
+		}
+		br.close();
+	}
 
 }
 
