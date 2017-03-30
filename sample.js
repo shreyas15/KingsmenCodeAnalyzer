@@ -18,6 +18,10 @@
 	else if(1){
 		foo3 = 4;
 	}
+	
+	var tool = {"doSomething": function () { ; }};
+	car.doEngine();
+	
 	var isMobile = {
 		Android: function() {
 			return navigator.userAgent.match(/Android/i);

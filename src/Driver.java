@@ -13,13 +13,14 @@ import java.util.List;
 public class Driver {
 	
 	private static final Pattern IDENTIFIER_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)"); //regex to find Identifiers.
+	private static final Pattern FUNCTION_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)[\\(][\\s]{0,}[\\)]"); //regex to find function names.
 	
 	public static void main(String[] args) throws IOException{
 		
 		String fileName = args[0];
-		System.out.println("==============================");
-		System.out.println("        WARNING REPORT        ");
-		System.out.println("==============================\n");
+		System.out.println("================================");
+		System.out.println("            WARNINGS            ");
+		System.out.println("================================\n");
 		System.out.println("------Unused Variables------\n");
 		findUnusedVariables(fileName);
 		
@@ -42,9 +43,6 @@ public class Driver {
 			t.registerFunctions();
 		}
 		updateFuncMap(fileName);
-		for (Token t: functTokens){
-			t.getFuncReport();
-		}
 		br.close();
 	}
 
@@ -104,12 +102,22 @@ public class Driver {
 	static void updateFuncMap(String fileName) throws IOException{
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		String eachLine = "";
+		int lineNumber = 0;
 		while((eachLine = br.readLine()) != null){
-			Matcher matcher = IDENTIFIER_RX.matcher(eachLine);
+			lineNumber += 1;
+			Matcher matcher = FUNCTION_RX.matcher(eachLine);
 			while (matcher.find()){
-				String found = matcher.group().trim();
-				int counter = Token.funcNames.containsKey(found)? Token.funcNames.get(found) : 0;
-				Token.funcNames.put(found, counter + 1);
+				String found = matcher.group().split("\\(")[0].trim();
+				boolean flag = Token.funcNames.containsKey(found)? true : false;
+				if (!flag && (!found.equals("function"))){
+					int counter = Token.undefNames.containsKey(found) ? Token.undefNames.get(found) : 0;
+					Token.undefNames.put(found, counter + 1);
+					System.out.println(found + " : " + "is possibly an undeclared function"  + " at line " + lineNumber);
+				}
+				else{
+					int counter = Token.funcNames.get(found) != null ? Token.funcNames.get(found) : 0;
+					Token.funcNames.put(found, counter + 1);
+				}
 			}
 		}
 		br.close();

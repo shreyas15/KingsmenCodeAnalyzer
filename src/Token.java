@@ -19,10 +19,11 @@ public class Token {
 	
 	private static final Pattern VAR_BOUNDARY = Pattern.compile("(let|var)(.*?)\\=(.*?)\\;");
 	private static final Pattern VAR_BOUNDARY2 = Pattern.compile("(let|var)(.*?)\\;");
-	private static final Pattern FUNC_BOUNDARY1 = Pattern.compile("(var)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\=][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)]");
-	private static final Pattern FUNC_BOUNDARY2 = Pattern.compile("(var)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\=][\\s]{0,}[\\{][\\s]{0,}[\\\"][\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\\"][\\s]{0,}[\\:][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)][\\s]{0,}[\\{]");
-	private static final Pattern FUNC_BOUNDARY3 = Pattern.compile("(set)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\(][\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\)][\\s]{0,}[\\{]");
-	private static final Pattern FUNC_BOUNDARY4 = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)[\\.]([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\(][\\s]{0,}[\\)][\\s]{0,}[\\;]");
+	private static final Pattern FUNCTION_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)[\\(][\\s]{0,}[\\)]"); //regex to find function names.
+	private static final Pattern FUNC_BOUNDARY1 = Pattern.compile("(var)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\=][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)]"); //regex for type var doSomethingFunction = function () { ... };
+	private static final Pattern FUNC_BOUNDARY2 = Pattern.compile("(var)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\=][\\s]{0,}[\\{]{0,}[\\s]{0,}[\\\"]{0,}[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\\"]{0,}[\\s]{0,}[\\:][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)][\\s]{0,}[\\{]"); //regex for type var tool = {"doSomething": function () { ... }};
+	private static final Pattern FUNC_BOUNDARY3 = Pattern.compile("(let)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\(][\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\)][\\s]{0,}[\\{]");  // regex for type let doSomething = function() {
+	private static final Pattern FUNC_BOUNDARY4 = Pattern.compile("[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\:][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)][\\s]{0,}[\\{]"); //regex for type mustang.getEngineType();
 	private static final Pattern IF_BOUNDARY = Pattern.compile("[\\t]{0,}[\\s]{0,}(if)[\\s]{0,}[\\(]{1,}[\\!]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\)]{1,}[\\n]{0,}[\\t]{0,}");
 	private static final Pattern IF_NOT = Pattern.compile("[\\t]{0,}[\\s]{0,}(if)[\\s]{0,}[\\(]{1,}[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\)]{1,}[\\n]{0,}[\\t]{0,}[\\{]");
 	private static final Pattern ELSE_BOUNDARY = Pattern.compile("[\\t]{0,}[\\}]{0,}[\\t]{0,}[\\s]{0,}(else)[\\s]{0,}[\\n]{0,}[\\t]{0,}");
@@ -30,6 +31,7 @@ public class Token {
 	
 	public static Map<String, Integer> varNames = new HashMap<String, Integer>(); 
 	public static Map<String, Integer> funcNames = new HashMap<String, Integer>(); 
+	public static Map<String, Integer> undefNames = new HashMap<String, Integer>(); 
 	
 	public Map<String, Integer> getMap() {
 	       return varNames;
@@ -74,12 +76,12 @@ public class Token {
 		else return;
 	}
 	
-	public void getFuncReport() {
-		boolean flag = funcNames.containsKey(this.objName) ? (funcNames.get(this.objName) == 2) ? true : false : false;
-		if (flag)
-			System.out.println(this.objName + " : " + "is an undeclared function"  + " at line " + this.lineNumber);
-		else return;		
-	}
+//	public void getFuncReport() {
+//		boolean flag = funcNames.containsKey(this.objName) ? (funcNames.get(this.objName) == 1) ? true : false : false;
+//		if (flag)
+//			System.out.println(this.objName + " : " + "is possibly an undeclared function"  + " at line " + this.lineNumber);
+//		else return;		
+//	}
 
 	public void registerVariables(){
 		Matcher matcher = VAR_BOUNDARY.matcher(this.line);
@@ -112,7 +114,6 @@ public class Token {
 		}
 	}
 
-	
 	public void findIfElse() throws IOException {
 		
 		String multiLine = getMultiLineString(this.fileName, this.line);
@@ -136,6 +137,48 @@ public class Token {
 		else return;
 	}
 
+	public void registerFunctions() {
+		Matcher match0 = FUNCTION_RX.matcher(this.line);
+		Matcher match1 = FUNC_BOUNDARY1.matcher(this.line);
+		Matcher match2 = FUNC_BOUNDARY2.matcher(this.line);
+		Matcher match3 = FUNC_BOUNDARY3.matcher(this.line);
+		Matcher match4 = FUNC_BOUNDARY4.matcher(this.line);
+		String splitter = "";
+		
+		if(match1.find()){
+			splitter = line.split("\\=")[0].split("var")[1].trim();
+			this.objName = splitter;
+			int counter = funcNames.containsKey(this.objName)? funcNames.get(this.objName) : 0;
+			funcNames.put(this.objName, counter + 1);
+		}
+		else if(match2.find()){
+			splitter = line.split("\"",3)[1].trim();
+			this.objName = splitter;
+			int counter = funcNames.containsKey(this.objName)? funcNames.get(this.objName) : 0;
+			funcNames.put(this.objName, counter + 1);
+		}
+		else if(match4.find()){
+			splitter = line.split(":")[0].trim();
+			this.objName = splitter;
+			int counter = funcNames.containsKey(this.objName)? funcNames.get(this.objName) : 0;
+			funcNames.put(this.objName, counter + 1);
+		}
+		else if(match3.find()){
+			splitter = line.split("\\=")[0].split("let")[1].trim();
+			this.objName = splitter;
+			int counter = funcNames.containsKey(this.objName)? funcNames.get(this.objName) : 0;
+			funcNames.put(this.objName, counter + 1);
+		}
+//		else if(match0.find()){
+//			splitter = match0.group().split("\\(")[0].trim();
+//			this.objName = splitter;
+//			int counter = funcNames.containsKey(this.objName)? funcNames.get(this.objName) : 0;
+//			funcNames.put(this.objName, counter + 1);
+//		}
+		else
+			return;
+	}
+	
 	private String getMultiLineString(String fileName2, String line2) throws IOException {
 		
 		BufferedReader bufferreader = new BufferedReader(new FileReader(fileName2));
@@ -165,12 +208,8 @@ public class Token {
 			bufferreader.close();
 		}
 	}
-
 	
-	public void registerFunctions() {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 }
 
