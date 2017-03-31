@@ -26,8 +26,15 @@ public class Driver {
 		
 		System.out.println("\n------Undeclared Function Calls------\n");
 		findUndeclaredFuncts(fileName);
+		
+		System.out.println("\n------Missing/Extra Brackets------\n");
+		if (!Context.findBracketBalance(fileName)){	
+			;
+		}
+		else System.out.println("Brackets balanced");
 	}
 	
+
 	private static void findUndeclaredFuncts(String fileName) throws IOException {
 		List <Context> functTokens = new ArrayList <Context>();
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
@@ -64,7 +71,7 @@ public class Driver {
 		}
 	}
 
-	static void findUnusedVariables(String fileName) throws IOException{
+	private static void findUnusedVariables(String fileName) throws IOException{
 		List <Context> tokens = new ArrayList <Context>();
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		String eachLine = "";
@@ -81,6 +88,5 @@ public class Driver {
 		}
 		br.close();
 	}
-
 
 }

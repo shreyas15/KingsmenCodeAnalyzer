@@ -3,8 +3,11 @@ import java.io.BufferedReader;
 //import java.awt.BufferCapabilities;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,27 +20,47 @@ public class Context {
 	String ifOrElse;
 	String fileName;
 	
-	private static final Pattern IDENTIFIER_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)"); //regex to find Identifiers.
-	private static final Pattern VAR_BOUNDARY = Pattern.compile("(let|var)(.*?)\\=(.*?)\\;");
-	private static final Pattern VAR_BOUNDARY2 = Pattern.compile("(let|var)(.*?)\\;");
-	private static final Pattern FUNCTION_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)[\\(][\\s]{0,}[\\)]"); //regex to find function names.
-	private static final Pattern FUNC_BOUNDARY1 = Pattern.compile("(var)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\=][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)]"); //regex for type var doSomethingFunction = function () { ... };
-	private static final Pattern FUNC_BOUNDARY2 = Pattern.compile("(var)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\=][\\s]{0,}[\\{]{0,}[\\s]{0,}[\\\"]{0,}[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\\"]{0,}[\\s]{0,}[\\:][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)][\\s]{0,}[\\{]"); //regex for type var tool = {"doSomething": function () { ... }};
-	private static final Pattern FUNC_BOUNDARY3 = Pattern.compile("(let)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\(][\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\)][\\s]{0,}[\\{]");  // regex for type let doSomething = function() {
-	private static final Pattern FUNC_BOUNDARY4 = Pattern.compile("[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\:][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)][\\s]{0,}[\\{]"); //regex for type mustang.getEngineType();
-	private static final Pattern IF_BOUNDARY = Pattern.compile("[\\t]{0,}[\\s]{0,}(if)[\\s]{0,}[\\(]{1,}[\\!]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\)]{1,}[\\n]{0,}[\\t]{0,}");
-	private static final Pattern IF_NOT = Pattern.compile("[\\t]{0,}[\\s]{0,}(if)[\\s]{0,}[\\(]{1,}[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\)]{1,}[\\n]{0,}[\\t]{0,}[\\{]");
+	/***
+	 * 
+	 * REGEX for various pattern detection.
+	 * 
+	 */
+	//general Identifiers.
+	private static final Pattern IDENTIFIER_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)"); 
+	//variable with assignment
+	private static final Pattern VAR_ASN_RX = Pattern.compile("(let|var)(.*?)\\=(.*?)\\;");
+	//variable declared
+	private static final Pattern VAR_DEC_RX = Pattern.compile("(let|var)(.*?)\\;");
+	//typical function declaration
+	private static final Pattern FUNCTION_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)[\\(][\\s]{0,}[\\)]");
+	//Anonymous functions like: var doSomethingFunction = function () { ... };
+	private static final Pattern FUNC_BOUNDARY1 = Pattern.compile("(var)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\=][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)]"); 
+	//function expressions with names like: var tool = {"doSomething": function () { ... }};
+	private static final Pattern FUNC_BOUNDARY2 = Pattern.compile("(var)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\=][\\s]{0,}[\\{]{0,}[\\s]{0,}[\\\"]{0,}[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\\"]{0,}[\\s]{0,}[\\:][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)][\\s]{0,}[\\{]"); 
+	//function declarations like: let doSomething = function() {
+	private static final Pattern FUNC_BOUNDARY3 = Pattern.compile("(let)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\(][\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\)][\\s]{0,}[\\{]");  
+	//function calls like: mustang.getEngineType();
+	private static final Pattern FUNC_BOUNDARY4 = Pattern.compile("[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\:][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)][\\s]{0,}[\\{]"); 
+	//single line IF
+	private static final Pattern IF_RX = Pattern.compile("[\\t]{0,}[\\s]{0,}(if)[\\s]{0,}[\\(]{1,}[\\!]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\)]{1,}[\\n]{0,}[\\t]{0,}");
+	//if with trailing curly bracket
+	private static final Pattern IF_NOT_RX = Pattern.compile("[\\t]{0,}[\\s]{0,}(if)[\\s]{0,}[\\(]{1,}[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\)]{1,}[\\n]{0,}[\\t]{0,}[\\{]");
+	//single line else
 	private static final Pattern ELSE_BOUNDARY = Pattern.compile("[\\t]{0,}[\\}]{0,}[\\t]{0,}[\\s]{0,}(else)[\\s]{0,}[\\n]{0,}[\\t]{0,}");
+	//else with trailing curly bracket
 	private static final Pattern ELSE_NOT = Pattern.compile("[\\t]{0,}[\\}]{0,}[\\t]{0,}[\\s]{0,}(else)[\\s]{0,}[\\n]{0,}[\\t]{0,}([a-zA-Z_$][a-zA-Z0-9_$])*[\\s]{0,}[\\n]{0,}[\\t]{0,}[\\{]");
 	
+	/***
+	 * 
+	 * Hash Maps
+	 */
 	public static Map<String, Integer> varNames = new HashMap<String, Integer>(); 
 	public static Map<String, Integer> funcNames = new HashMap<String, Integer>(); 
-	public static Map<String, Integer> undefNames = new HashMap<String, Integer>(); 
-	
-	public Map<String, Integer> getMap() {
-	       return varNames;
-	 }
-	
+	public static Map<String, Integer> undecFuncNames = new HashMap<String, Integer>(); 
+	public static Map<String, Integer> bracketCount = new HashMap<String, Integer>(); 
+	public static List <Context> openBrackets = new ArrayList <Context>();
+	public static List <Context> closedBrackets = new ArrayList <Context>();
+
 	public Context (){
 		this.line = "";
 		this.objName = "";
@@ -62,12 +85,37 @@ public class Context {
 		this.columnNumber = 0;
 	}
 	
-	public void getVarReport(){
-		boolean flag = varNames.containsKey(this.objName) ? (varNames.get(this.objName) == 2) ? true : false : false;
-		if (flag)
-			System.out.println(this.objName + " : " + "is an unused variable"  + " at line " + this.lineNumber);
-		else return;
+	public Context (String line, String fileName, String objName, int lineNum, int colNum){
+		this.line = line;
+		this.fileName = fileName;
+		this.objName = objName;
+		this.lineNumber = lineNum;
+		this.columnNumber = colNum;
 	}
+	
+	/***
+	 * 
+	 * Getter methods
+	 */
+	public Map<String, Integer> getVariableMap() {
+	       return varNames;
+	 }
+	
+	public Map<String, Integer> getDeclaredFunctions() {
+	       return funcNames;
+	 }
+	
+	public Map<String, Integer> getUndeclaredFunctions() {
+	       return undecFuncNames;
+	 }
+	
+	
+	/***
+	 * 
+	 * Methods to perform operations on the context. 
+	 */
+	
+	//...*** private methods
 	
 	private void getIfElseReport() {
 		if (this.ifOrElse.equals("if"))
@@ -76,17 +124,49 @@ public class Context {
 			System.out.println(this.line.trim() + " : " + "possibly a one line else"  + " at line " + this.lineNumber);
 		else return;
 	}
+
+	private String getMultiLineString(String fileName2, String line2) throws IOException {
+		
+		BufferedReader bufferreader = new BufferedReader(new FileReader(fileName2));
+		StringBuilder stringbuilder = new StringBuilder();
+		String line;
+		boolean fromLine = false;
+		
+		try{
+			while((line = bufferreader.readLine()) != null){
+				if (line.contains(line2)){
+					fromLine = true;
+				}
+				int count = 2;
+				while (line != null && fromLine == true && count > 0){
+					stringbuilder.append(line);
+					stringbuilder.append("\n");
+					line = bufferreader.readLine();
+					count -= 1;
+				}
+				if (fromLine){
+					return stringbuilder.toString();
+				}
+			}
+			return "";
+		}
+		finally{
+			bufferreader.close();
+		}
+	}
 	
-//	public void getFuncReport() {
-//		boolean flag = funcNames.containsKey(this.objName) ? (funcNames.get(this.objName) == 1) ? true : false : false;
-//		if (flag)
-//			System.out.println(this.objName + " : " + "is possibly an undeclared function"  + " at line " + this.lineNumber);
-//		else return;		
-//	}
+	//...*** public methods
+
+	public void getVarReport(){
+		boolean flag = varNames.containsKey(this.objName) ? (varNames.get(this.objName) == 2) ? true : false : false;
+		if (flag)
+			System.out.println(this.objName + " : " + "is an unused variable"  + " at line " + this.lineNumber);
+		else return;
+	}
 
 	public void registerVariables(){
-		Matcher matcher = VAR_BOUNDARY.matcher(this.line);
-		Matcher matcher2 = VAR_BOUNDARY2.matcher(this.line);
+		Matcher matcher = VAR_ASN_RX.matcher(this.line);
+		Matcher matcher2 = VAR_DEC_RX.matcher(this.line);
 		String splitter = "";
 		
 		if (matcher.matches()){
@@ -118,9 +198,9 @@ public class Context {
 	public void findIfElse() throws IOException {
 		
 		String multiLine = getMultiLineString(this.fileName, this.line);
-		Matcher matcher1 = IF_BOUNDARY.matcher(multiLine);
+		Matcher matcher1 = IF_RX.matcher(multiLine);
 		Matcher matcher2 = ELSE_BOUNDARY.matcher(multiLine);
-		Matcher matcher3 = IF_NOT.matcher(multiLine);
+		Matcher matcher3 = IF_NOT_RX.matcher(multiLine);
 		Matcher matcher4 = ELSE_NOT.matcher(multiLine);
 		
 		if(matcher1.find()){
@@ -139,7 +219,7 @@ public class Context {
 	}
 
 	public void registerFunctions() {
-		Matcher match0 = FUNCTION_RX.matcher(this.line);
+		//Matcher match0 = FUNCTION_RX.matcher(this.line);
 		Matcher match1 = FUNC_BOUNDARY1.matcher(this.line);
 		Matcher match2 = FUNC_BOUNDARY2.matcher(this.line);
 		Matcher match3 = FUNC_BOUNDARY3.matcher(this.line);
@@ -180,35 +260,7 @@ public class Context {
 			return;
 	}
 	
-	private String getMultiLineString(String fileName2, String line2) throws IOException {
-		
-		BufferedReader bufferreader = new BufferedReader(new FileReader(fileName2));
-		StringBuilder stringbuilder = new StringBuilder();
-		String line;
-		boolean fromLine = false;
-		
-		try{
-			while((line = bufferreader.readLine()) != null){
-				if (line.contains(line2)){
-					fromLine = true;
-				}
-				int count = 2;
-				while (line != null && fromLine == true && count > 0){
-					stringbuilder.append(line);
-					stringbuilder.append("\n");
-					line = bufferreader.readLine();
-					count -= 1;
-				}
-				if (fromLine){
-					return stringbuilder.toString();
-				}
-			}
-			return "";
-		}
-		finally{
-			bufferreader.close();
-		}
-	}
+	//...*** static methods
 	
 	public static void getUndefFunctions(String fileName) throws IOException{
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
@@ -221,8 +273,8 @@ public class Context {
 				String found = matcher.group().split("\\(")[0].trim();
 				boolean flag = Context.funcNames.containsKey(found)? true : false;
 				if (!flag && (!found.equals("function"))){
-					int counter = Context.undefNames.containsKey(found) ? Context.undefNames.get(found) : 0;
-					Context.undefNames.put(found, counter + 1);
+					int counter = Context.undecFuncNames.containsKey(found) ? Context.undecFuncNames.get(found) : 0;
+					Context.undecFuncNames.put(found, counter + 1);
 					System.out.println(found + " : " + "is possibly an undeclared function"  + " at line " + lineNumber);
 				}
 				else{
@@ -248,5 +300,43 @@ public class Context {
 		br.close();
 	}
 
+	public static boolean findBracketBalance(String fileName) throws IOException {
+
+		BufferedReader br = new BufferedReader(new FileReader(fileName));
+		String eachLine = "";
+		int lineNumber = 0;
+		Stack <Character> stack = new Stack <Character> ();
+		try{
+			while((eachLine = br.readLine()) != null){
+				lineNumber += 1;
+				for (int i = 0; i < eachLine.length(); i++){
+			        char current = eachLine.charAt(i);
+			        if (current == '{'){
+			            stack.push(current);
+			            openBrackets.add(new Context(eachLine, fileName, "{", lineNumber, i));
+			        }
+
+
+			        if (current == '}'){
+			        	closedBrackets.add(new Context(eachLine, fileName, "}", lineNumber, i));
+			            if (stack.isEmpty()){
+			            	System.out.println("Extra } at line " + lineNumber + " and position " + i);
+			            	return false;
+			            }
+
+			            char last = stack.peek();	
+			            if (current == '}' && last == '{')
+			                stack.pop();
+			            else 
+			                return false;
+			        }
+			    }
+			}
+		}
+		finally{
+			br.close();
+		}
+		return stack.isEmpty();	
+	}
 }
 
