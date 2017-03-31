@@ -305,6 +305,7 @@ public class Context {
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		String eachLine = "";
 		int lineNumber = 0;
+		boolean balanced = true;
 		Stack <Character> stack = new Stack <Character> ();
 		try{
 			while((eachLine = br.readLine()) != null){
@@ -321,7 +322,8 @@ public class Context {
 			        	closedBrackets.add(new Context(eachLine, fileName, "}", lineNumber, i));
 			            if (stack.isEmpty()){
 			            	System.out.println("Extra } at line " + lineNumber + " and position " + i);
-			            	return false;
+			            	balanced = false;
+			            	continue;
 			            }
 
 			            char last = stack.peek();	
@@ -336,7 +338,7 @@ public class Context {
 		finally{
 			br.close();
 		}
-		return stack.isEmpty();	
+		if (balanced) return stack.isEmpty(); else return false;
 	}
 }
 
