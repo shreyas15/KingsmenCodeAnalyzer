@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -22,7 +23,9 @@ public class Context {
 	
 	/***
 	 * 
-	 * REGEX for various pattern detection.
+	 * REGEX for various pattern detection. 
+	 * The reason why some of the regex are long is because the file is parsed
+	 * as one single string with various escape characters. 
 	 * 
 	 */
 	//general Identifiers.
@@ -31,7 +34,13 @@ public class Context {
 	private static final Pattern VAR_ASN_RX = Pattern.compile("(let|var)(.*?)\\=(.*?)\\;");
 	//variable declared
 	private static final Pattern VAR_DEC_RX = Pattern.compile("(let|var)(.*?)\\;");
-	//typical function declaration
+	//function expression for bracket check
+	private static final Pattern EXP_FUNC_RX = Pattern.compile("(function)[\\(][\\s]{0,}[\\)]");
+	//function to match function () {
+	private static final Pattern EXP_FUNC_WITH_BRKT_RX = Pattern.compile("(function)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*){0,}[\\s]{0,}[\\(][\\s]{0,}[\\)][\\r\\n]{0,}[\\{]");
+	//function declaration for bracket check
+	private static final Pattern DEC_FUNC_RX = Pattern.compile("(function)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\(][\\s]{0,}[\\)]");
+	//any function name
 	private static final Pattern FUNCTION_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)[\\(][\\s]{0,}[\\)]");
 	//Anonymous functions like: var doSomethingFunction = function () { ... };
 	private static final Pattern FUNC_BOUNDARY1 = Pattern.compile("(var)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\=][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)]"); 
@@ -125,7 +134,7 @@ public class Context {
 		else return;
 	}
 
-	private String getMultiLineString(String fileName2, String line2) throws IOException {
+	private static String getMultiLineString(String fileName2, String line2) throws IOException {
 		
 		BufferedReader bufferreader = new BufferedReader(new FileReader(fileName2));
 		StringBuilder stringbuilder = new StringBuilder();
@@ -219,7 +228,7 @@ public class Context {
 	}
 
 	public void registerFunctions() {
-		//Matcher match0 = FUNCTION_RX.matcher(this.line);
+		Matcher match0 = DEC_FUNC_RX.matcher(this.line);
 		Matcher match1 = FUNC_BOUNDARY1.matcher(this.line);
 		Matcher match2 = FUNC_BOUNDARY2.matcher(this.line);
 		Matcher match3 = FUNC_BOUNDARY3.matcher(this.line);
@@ -250,12 +259,12 @@ public class Context {
 			int counter = funcNames.containsKey(this.objName)? funcNames.get(this.objName) : 0;
 			funcNames.put(this.objName, counter + 1);
 		}
-//		else if(match0.find()){
-//			splitter = match0.group().split("\\(")[0].trim();
-//			this.objName = splitter;
-//			int counter = funcNames.containsKey(this.objName)? funcNames.get(this.objName) : 0;
-//			funcNames.put(this.objName, counter + 1);
-//		}
+		else if(match0.find()){
+			splitter = match0.group().split("\\(")[0].split("function")[1].trim();
+			this.objName = splitter;
+			int counter = funcNames.containsKey(this.objName)? funcNames.get(this.objName) : 0;
+			funcNames.put(this.objName, counter + 1);
+		}
 		else
 			return;
 	}
@@ -269,13 +278,16 @@ public class Context {
 		while((eachLine = br.readLine()) != null){
 			lineNumber += 1;
 			Matcher matcher = FUNCTION_RX.matcher(eachLine);
+			if (matcher.matches()){
+				String linesAfterthis = getMultiLineString(fileName, eachLine);
+			}
 			while (matcher.find()){
 				String found = matcher.group().split("\\(")[0].trim();
 				boolean flag = Context.funcNames.containsKey(found)? true : false;
 				if (!flag && (!found.equals("function"))){
 					int counter = Context.undecFuncNames.containsKey(found) ? Context.undecFuncNames.get(found) : 0;
 					Context.undecFuncNames.put(found, counter + 1);
-					System.out.println(found + " : " + "is possibly an undeclared function"  + " at line " + lineNumber);
+					System.out.println(found + " : " + "was used before it was defined"  + " at line " + lineNumber);
 				}
 				else{
 					int counter = Context.funcNames.get(found) != null ? Context.funcNames.get(found) : 0;
@@ -310,6 +322,10 @@ public class Context {
 		try{
 			while((eachLine = br.readLine()) != null){
 				lineNumber += 1;
+				
+				String multiLine = getMultiLineString(fileName, eachLine);
+				Matcher matchFunc = EXP_FUNC_RX.matcher(multiLine);
+				
 				for (int i = 0; i < eachLine.length(); i++){
 			        char current = eachLine.charAt(i);
 			        if (current == '{'){
@@ -327,18 +343,27 @@ public class Context {
 			            }
 
 			            char last = stack.peek();	
-			            if (current == '}' && last == '{')
+			            if (current == '}' && last == '{'){
 			                stack.pop();
-			            else 
-			                return false;
+			                continue;
+			            }
 			        }
 			    }
 			}
+			while (!stack.isEmpty()){
+				Iterator<Context> iterator = openBrackets.iterator();
+				System.out.println("Missing closing bracket corresponding to '{' at line " + iterator.next().lineNumber);
+				stack.pop();
+				balanced = false;
+            }
+			
 		}
 		finally{
 			br.close();
 		}
-		if (balanced) return stack.isEmpty(); else return false;
+		if (balanced) return stack.isEmpty(); 
+		else
+			return false;
 	}
 }
 

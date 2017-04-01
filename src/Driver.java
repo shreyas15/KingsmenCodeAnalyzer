@@ -18,16 +18,16 @@ public class Driver {
 		System.out.println("================================");
 		System.out.println("            WARNINGS            ");
 		System.out.println("================================\n");
-		System.out.println("------Unused Variables------\n");
+		//System.out.println("------Unused Variables------\n");
 		findUnusedVariables(fileName);
 		
-		System.out.println("\n------One Line if/else------\n");
+		//System.out.println("\n------One Line if/else------\n");
 		findOneLineIfElse(fileName);
 		
-		System.out.println("\n------Undeclared Function Calls------\n");
+		//System.out.println("\n------Undeclared Function Calls------\n");
 		findUndeclaredFuncts(fileName);
 		
-		System.out.println("\n------Missing/Extra Brackets------\n");
+		//System.out.println("\n------Missing/Extra Brackets------\n");
 		if (!Context.findBracketBalance(fileName)){	
 			;
 		}
