@@ -44,7 +44,7 @@ public class Driver {
 			functTokens.add(new Context(eachLine.trim(), ++lineNumber));
 		}
 		for(Context t:functTokens){
-			t.registerFunctions();
+			t.registerFunctions(fileName);
 		}
 		Context.getUndefFunctions(fileName);
 		br.close();

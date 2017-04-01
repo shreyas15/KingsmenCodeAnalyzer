@@ -1,6 +1,4 @@
 import java.io.BufferedReader;
-//import java.io.FileNotFoundException;
-//import java.awt.BufferCapabilities;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,10 +14,10 @@ public class Context {
 	
 	String line;
 	String objName;
-	int lineNumber;
-	int columnNumber;
 	String ifOrElse;
 	String fileName;
+	int lineNumber;
+	int columnNumber;
 	
 	/***
 	 * 
@@ -28,6 +26,9 @@ public class Context {
 	 * as one single string with various escape characters. 
 	 * 
 	 */
+	
+	//single line comments
+	private static final Pattern SL_COMMENT_RX = Pattern.compile("^(\\/\\*(.*)\\*\\/)|(\\/\\/(.*)$)");
 	//general Identifiers.
 	private static final Pattern IDENTIFIER_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)"); 
 	//variable with assignment
@@ -38,11 +39,11 @@ public class Context {
 	private static final Pattern EXP_FUNC_RX = Pattern.compile("(function)[\\(][\\s]{0,}[\\)]");
 	//function to match function () {
 	private static final Pattern EXP_FUNC_WITH_BRKT_RX = Pattern.compile("(function)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*){0,}[\\s]{0,}[\\(][\\s]{0,}[\\)][\\r\\n]{0,}[\\{]");
-	//function declaration for bracket check
+	//function declaration for bracket check like function name ( )
 	private static final Pattern DEC_FUNC_RX = Pattern.compile("(function)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\(][\\s]{0,}[\\)]");
-	//any function name
+	//any function call
 	private static final Pattern FUNCTION_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)[\\(][\\s]{0,}[\\)]");
-	//Anonymous functions like: var doSomethingFunction = function () { ... };
+	//Anonymous functions like: var doSomethingFunction = function ();
 	private static final Pattern FUNC_BOUNDARY1 = Pattern.compile("(var)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\=][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)]"); 
 	//function expressions with names like: var tool = {"doSomething": function () { ... }};
 	private static final Pattern FUNC_BOUNDARY2 = Pattern.compile("(var)[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\=][\\s]{0,}[\\{]{0,}[\\s]{0,}[\\\"]{0,}[\\s]{0,}([a-zA-Z_$][a-zA-Z0-9_$]*)[\\s]{0,}[\\\"]{0,}[\\s]{0,}[\\:][\\s]{0,}(function)[\\s]{0,}[\\(][\\s]{0,}[\\)][\\s]{0,}[\\{]"); 
@@ -118,7 +119,6 @@ public class Context {
 	       return undecFuncNames;
 	 }
 	
-	
 	/***
 	 * 
 	 * Methods to perform operations on the context. 
@@ -126,12 +126,11 @@ public class Context {
 	
 	//...*** private methods
 	
-	private void getIfElseReport() {
-		if (this.ifOrElse.equals("if"))
-			System.out.println(this.line.trim() + " : " + "possibly a one line if"  + " at line " + this.lineNumber);
-		else if(this.ifOrElse.equals("else"))
-			System.out.println(this.line.trim() + " : " + "possibly a one line else"  + " at line " + this.lineNumber);
-		else return;
+	public boolean isOneLineComment(String fileName, String currentLine) throws IOException{
+		Matcher slComMatcher = SL_COMMENT_RX.matcher(currentLine);
+		if (slComMatcher.matches())
+			return true;
+		return false;
 	}
 
 	private static String getMultiLineString(String fileName2, String line2) throws IOException {
@@ -146,12 +145,14 @@ public class Context {
 				if (line.contains(line2)){
 					fromLine = true;
 				}
-				int count = 2;
+				int count = 1;
 				while (line != null && fromLine == true && count > 0){
-					stringbuilder.append(line);
-					stringbuilder.append("\n");
+					if (!line.isEmpty()){
+						stringbuilder.append(line);
+						stringbuilder.append("\n");
+						count -= 1;
+					}
 					line = bufferreader.readLine();
-					count -= 1;
 				}
 				if (fromLine){
 					return stringbuilder.toString();
@@ -172,6 +173,7 @@ public class Context {
 			System.out.println(this.objName + " : " + "is an unused variable"  + " at line " + this.lineNumber);
 		else return;
 	}
+	
 
 	public void registerVariables(){
 		Matcher matcher = VAR_ASN_RX.matcher(this.line);
@@ -203,6 +205,21 @@ public class Context {
 			varNames.put(this.objName, counter + 1);
 		}
 	}
+	
+	public static void updateVarMap(String fileName) throws IOException{
+		BufferedReader br = new BufferedReader(new FileReader(fileName));
+		String eachLine = "";
+		while((eachLine = br.readLine()) != null){
+			Matcher matcher = IDENTIFIER_RX.matcher(eachLine);
+			while (matcher.find()){
+				String found = matcher.group().trim();
+				int counter = Context.varNames.containsKey(found)? Context.varNames.get(found) : 0;
+				Context.varNames.put(found, counter + 1);
+			}
+		}
+		br.close();
+	}
+	
 
 	public void findIfElse() throws IOException {
 		
@@ -226,8 +243,17 @@ public class Context {
 		}
 		else return;
 	}
+	
+	private void getIfElseReport() {
+		if (this.ifOrElse.equals("if"))
+			System.out.println(this.line.trim() + " : " + "possibly a one line if"  + " at line " + this.lineNumber);
+		else if(this.ifOrElse.equals("else"))
+			System.out.println(this.line.trim() + " : " + "possibly a one line else"  + " at line " + this.lineNumber);
+		else return;
+	}
+	
 
-	public void registerFunctions() {
+	public void registerFunctions(String fileName) throws IOException {
 		Matcher match0 = DEC_FUNC_RX.matcher(this.line);
 		Matcher match1 = FUNC_BOUNDARY1.matcher(this.line);
 		Matcher match2 = FUNC_BOUNDARY2.matcher(this.line);
@@ -240,6 +266,8 @@ public class Context {
 			this.objName = splitter;
 			int counter = funcNames.containsKey(this.objName)? funcNames.get(this.objName) : 0;
 			funcNames.put(this.objName, counter + 1);
+			if (isFunctMissingBracket(fileName, this.line))
+				System.out.println(this.line + " : Expected '{' after " + this.objName + " (...) " + "at line " + this.lineNumber);
 		}
 		else if(match2.find()){
 			splitter = line.split("\"",3)[1].trim();
@@ -264,13 +292,32 @@ public class Context {
 			this.objName = splitter;
 			int counter = funcNames.containsKey(this.objName)? funcNames.get(this.objName) : 0;
 			funcNames.put(this.objName, counter + 1);
+			if (isFunctMissingBracket(fileName, this.line))
+					System.out.println(this.line + " : Expected '{' after " + this.objName + " (...) " + "at line " + this.lineNumber );
 		}
 		else
 			return;
 	}
 	
+	
 	//...*** static methods
 	
+	private boolean isFunctMissingBracket(String fileName, String currentLine) throws IOException {
+		if (currentLine.split("\\)",2)[1] == null || currentLine.split("\\)",2)[1].isEmpty()){
+			if (!(getMultiLineString(fileName, currentLine)).contains("{")){
+				// read further lines and see if there is a {. else report missing bracket.
+				return true;
+			}
+		}
+			
+		if(currentLine.split("\\)")[1].trim().contains("{") || currentLine.split("\\)")[1].trim().contains(";")){
+			//check for a closing bracket in the following lines
+			return false;
+		}
+		
+		return false;
+	}
+
 	public static void getUndefFunctions(String fileName) throws IOException{
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		String eachLine = "";
@@ -278,9 +325,6 @@ public class Context {
 		while((eachLine = br.readLine()) != null){
 			lineNumber += 1;
 			Matcher matcher = FUNCTION_RX.matcher(eachLine);
-			if (matcher.matches()){
-				String linesAfterthis = getMultiLineString(fileName, eachLine);
-			}
 			while (matcher.find()){
 				String found = matcher.group().split("\\(")[0].trim();
 				boolean flag = Context.funcNames.containsKey(found)? true : false;
@@ -298,19 +342,6 @@ public class Context {
 		br.close();
 	}
 	
-	public static void updateVarMap(String fileName) throws IOException{
-		BufferedReader br = new BufferedReader(new FileReader(fileName));
-		String eachLine = "";
-		while((eachLine = br.readLine()) != null){
-			Matcher matcher = IDENTIFIER_RX.matcher(eachLine);
-			while (matcher.find()){
-				String found = matcher.group().trim();
-				int counter = Context.varNames.containsKey(found)? Context.varNames.get(found) : 0;
-				Context.varNames.put(found, counter + 1);
-			}
-		}
-		br.close();
-	}
 
 	public static boolean findBracketBalance(String fileName) throws IOException {
 
@@ -323,9 +354,6 @@ public class Context {
 			while((eachLine = br.readLine()) != null){
 				lineNumber += 1;
 				
-				String multiLine = getMultiLineString(fileName, eachLine);
-				Matcher matchFunc = EXP_FUNC_RX.matcher(multiLine);
-				
 				for (int i = 0; i < eachLine.length(); i++){
 			        char current = eachLine.charAt(i);
 			        if (current == '{'){
@@ -333,11 +361,10 @@ public class Context {
 			            openBrackets.add(new Context(eachLine, fileName, "{", lineNumber, i));
 			        }
 
-
 			        if (current == '}'){
 			        	closedBrackets.add(new Context(eachLine, fileName, "}", lineNumber, i));
 			            if (stack.isEmpty()){
-			            	System.out.println("Extra } at line " + lineNumber + " and position " + i);
+			            	System.out.println("Found extra '}' at line " + lineNumber);
 			            	balanced = false;
 			            	continue;
 			            }
@@ -366,4 +393,3 @@ public class Context {
 			return false;
 	}
 }
-
