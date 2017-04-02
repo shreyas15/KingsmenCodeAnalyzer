@@ -1,23 +1,25 @@
-alert ( goo ()); 
-function foo(){
-    let bar = function() {
-        return 3;
-    };
-	var moo = 123;
-	
-    return 5;
-    var bar = function() {  
-        return 8;
-    };
-}
- if( a > b){
-	return 1;
-}
-else 
-	dothis();
+<SCRIPT LANGUAGE="JavaScript">
+var now = new Date();
+
+var days = new Array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
+
+var months = new Array('January','February','March','April','May','June','July','August','September','October','November','December');
+
+var date = ((now.getDate()<10) ? "0" : "")+ now.getDate();
+
+function fourdigits(number)	
+	return (number < 1000) ? number + 1900 : number;
+								
 
 
-let aq=2;
-let doSomething = () => 
+	{
+								today =  days[now.getDay()] + ", " +{
+         months[now.getMonth()] + " " +
+								date + ", " +}
+								let xyz = 0;
+	()} if (e) x; {else elementFromPoint
+	}
+         (fourdigits(now.getYear())) ;
 
-make();
+document.write(today);
+</script>

@@ -1,23 +1,25 @@
-alert ( goo ()); //function inside function 
-function foo(){
-    let bar = function() {
-        return 3;
-    };
-	var moo = 123;
-	
-    return 5;
-    var bar = function() {  /* i like to test */
-        return 8;
-    };
-}
-/* i like to test a lot */ if( a > b){
-	return 1;
-}
-else 
-	dothis();
-// just another comment
+<SCRIPT LANGUAGE="JavaScript">
+var now = new Date();
 
-let aq=2;
-let doSomething = () => 
+var days = new Array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
 
-make();
+var months = new Array('January','February','March','April','May','June','July','August','September','October','November','December');
+
+var date = ((now.getDate()<10) ? "0" : "")+ now.getDate();
+
+function fourdigits(number)	
+	return (number < 1000) ? number + 1900 : number;
+								//{{{{{//{/*000}}}}}
+
+/*{fyu} atom()}} */
+	{
+								today =  days[now.getDay()] + ", " +{
+         months[now.getMonth()] + " " +
+								date + ", " +}
+								let xyz = 0;
+	()} if (e) x; {else elementFromPoint
+	}
+         (fourdigits(now.getYear())) ;
+
+document.write(today);
+</script>

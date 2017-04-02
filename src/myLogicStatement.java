@@ -47,7 +47,7 @@ public class myLogicStatement extends Context{
 				getIfElseReport();
 			}
 		}
-		else if(matcher2.find()){
+		if(matcher2.find()){
 			if (!matcher4.find()){
 				this._ifOrElse = "else";
 				getIfElseReport();
