@@ -1,23 +1,15 @@
-/**
- * 
- */
-
-/**
- * @author shreyas
- *
- */
-
 import java.io.BufferedReader;
-//import java.io.FileNotFoundException;
-//import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-//import java.util.HashMap;
-//import java.util.Map;
-//import java.util.regex.Pattern;
-//import java.util.regex.Matcher;
 import java.util.List;
+
+
+/**
+ * @author shreyas s bhat
+ *
+ */
+
 
 public class Driver {
 	
@@ -31,7 +23,7 @@ public class Driver {
 		System.out.println("            WARNINGS            ");
 		System.out.println("================================\n");
 		//System.out.println("------Unused Variables------\n");
-		findUnusedVariables(fileName);
+		printUnusedVariables(fileName);
 		
 		//System.out.println("\n------One Line if/else------\n");
 		findOneLineIfElse(fileName);
@@ -40,23 +32,23 @@ public class Driver {
 		findUndeclaredFuncts(fileName);
 		
 		//System.out.println("\n------Missing/Extra Brackets------\n");
-		Context.findBracketBalance(fileName);
+		myBracket.findBracketBalance(fileName);
 	}
 	
 
 	private static void findUndeclaredFuncts(String fileName) throws IOException {
-		List <Context> functTokens = new ArrayList <Context>();
+		List <myFunction> functTokens = new ArrayList <myFunction>();
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		String eachLine = "";
 		int lineNumber = 0;
 		try{
 			while((eachLine = br.readLine()) != null){
-				functTokens.add(new Context(eachLine.trim(), ++lineNumber));
+				functTokens.add(new myFunction(eachLine.trim(), ++lineNumber));
 			}
-			for(Context t:functTokens){
+			for(myFunction t : functTokens){
 				t.registerFunctions(fileName);
 			}
-			Context.getUndefFunctions(fileName);
+			myFunction.getUndefFunctions(fileName);
 		}
 		catch (Exception e){
 			System.out.println(e.getMessage());
@@ -69,16 +61,16 @@ public class Driver {
 	private static void findOneLineIfElse(String fileName) throws IOException {
 		
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
-		List <Context> logicalTokens = new ArrayList <Context>();
+		List <myLogicStatement> logicalTokens = new ArrayList <myLogicStatement>();
 		String eachLine = "";
 		int lineNumber = 0;
 		try{
 			while((eachLine = br.readLine()) != null){
 				lineNumber += 1;
 				if (eachLine.contains("if") || eachLine.contains("else"))
-					logicalTokens.add(new Context(eachLine, fileName, lineNumber));
+					logicalTokens.add(new myLogicStatement(eachLine, fileName, lineNumber));
 			}
-			for(Context t : logicalTokens){
+			for(myLogicStatement t : logicalTokens){
 				t.findIfElse();
 			}
 		}
@@ -90,20 +82,20 @@ public class Driver {
 		}
 	}
 
-	private static void findUnusedVariables(String fileName) throws IOException{
-		List <Context> tokens = new ArrayList <Context>();
+	private static void printUnusedVariables(String fileName) throws IOException{
+		List <myVariable> variables = new ArrayList <myVariable>();
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		String eachLine = "";
 		int lineNumber = 0;
 		try{
 			while((eachLine = br.readLine()) != null){
-				tokens.add(new Context(eachLine.trim(), ++lineNumber));
+				variables.add(new myVariable(eachLine.trim(), ++lineNumber));
 			}
-			for(Context t:tokens){
+			for(myVariable t : variables){
 				t.registerVariables();
 			}
-			Context.updateVarMap(fileName);
-			for (Context t: tokens){
+			myVariable.updateVarMap(fileName);
+			for (myVariable t: variables){
 				t.getVarReport();
 			}
 		}

@@ -7,13 +7,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 
- */
-
-/**
- * @author shreyas
+ * @author shreyas s bhat
  *
  */
+
+
 public class FileCompactor {
 	
 	//single line comments
@@ -24,6 +22,27 @@ public class FileCompactor {
 	public FileCompactor(String fileName){
 		this.fileName = fileName;
 	}
+	
+	/***
+	  *
+	  * void removeComments( )
+	  *
+	  * Summary of the removeComments function:
+	  *
+	  *    The removeComments function, scans the input file
+	  *    and removes all single line comments.
+	  *
+	  * Parameters   : None
+	  *
+	  * Return Value : None : Saves a new file to the original file location. 
+	  *
+	  * Description:
+	  *
+	  *    This function utilizes the Scanner and Writer classes to create a new usable file
+	  *    free of single line comments that might otherwise interfere in parsing the code. 
+	  *    The new output file has a composite name : <"compacted" + "_" + fileName>
+	  *
+	  */
 	
 	public void removeComments() throws IOException{
 		File input = new File(fileName);
@@ -50,6 +69,20 @@ public class FileCompactor {
 		}
 	}
 
+	/***
+	  *
+	  * void isOneLineComment( )
+	  *
+	  * Summary of the isOneLineComment function:
+	  *
+	  *    The isOneLineComment function, takes a string to check if it a single line comment or not.
+	  *
+	  * Parameters   : currentLine - line to be checked if single line or not.
+	  *
+	  * Return Value : true / false
+	  *
+	  */
+	
 	public boolean isOneLineComment(String currentLine) throws IOException{
 		Matcher slComMatcher = SL_COMMENT_RX.matcher(currentLine);
 		if (slComMatcher.matches())
