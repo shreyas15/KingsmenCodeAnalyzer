@@ -28,10 +28,7 @@ public class Driver {
 		findUndeclaredFuncts(fileName);
 		
 		//System.out.println("\n------Missing/Extra Brackets------\n");
-		if (!Context.findBracketBalance(fileName)){	
-			;
-		}
-		else System.out.println("Brackets balanced");
+		Context.findBracketBalance(fileName);
 	}
 	
 
@@ -40,14 +37,21 @@ public class Driver {
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		String eachLine = "";
 		int lineNumber = 0;
-		while((eachLine = br.readLine()) != null){
-			functTokens.add(new Context(eachLine.trim(), ++lineNumber));
+		try{
+			while((eachLine = br.readLine()) != null){
+				functTokens.add(new Context(eachLine.trim(), ++lineNumber));
+			}
+			for(Context t:functTokens){
+				t.registerFunctions(fileName);
+			}
+			Context.getUndefFunctions(fileName);
 		}
-		for(Context t:functTokens){
-			t.registerFunctions(fileName);
+		catch (Exception e){
+			System.out.println(e.getMessage());
 		}
-		Context.getUndefFunctions(fileName);
-		br.close();
+		finally{
+			br.close();
+		}
 	}
 
 	private static void findOneLineIfElse(String fileName) throws IOException {
@@ -66,6 +70,9 @@ public class Driver {
 				t.findIfElse();
 			}
 		}
+		catch( Exception e){
+			System.out.println(e.getMessage());
+		}
 		finally{
 			br.close();
 		}
@@ -76,17 +83,24 @@ public class Driver {
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		String eachLine = "";
 		int lineNumber = 0;
-		while((eachLine = br.readLine()) != null){
-			tokens.add(new Context(eachLine.trim(), ++lineNumber));
+		try{
+			while((eachLine = br.readLine()) != null){
+				tokens.add(new Context(eachLine.trim(), ++lineNumber));
+			}
+			for(Context t:tokens){
+				t.registerVariables();
+			}
+			Context.updateVarMap(fileName);
+			for (Context t: tokens){
+				t.getVarReport();
+			}
 		}
-		for(Context t:tokens){
-			t.registerVariables();
+		catch (Exception e){
+			System.out.println(e.getMessage());
 		}
-		Context.updateVarMap(fileName);
-		for (Context t: tokens){
-			t.getVarReport();
+		finally{
+			br.close();
 		}
-		br.close();
 	}
 
 }

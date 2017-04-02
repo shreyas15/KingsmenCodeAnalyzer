@@ -1,16 +1,22 @@
-boo();{}
-alert(foo()){;
-function foo()
-	var bar = function()
+alert ( goo ());
+function foo(){
+    let bar = function() {
         return 3;
     };
-    return bar();
-    var bar = function()
+	var moo = 123;
+	
+    return 5;
+    var bar = function() {
         return 8;
-}}
-if (condition)
-	statement;
-
-
+    };
+}
+if( a > b){
+	return 1;
+}
 else 
-	doSomethingElse();
+	dothis();
+
+let aq=2;
+let doSomething = () => 
+
+make();
