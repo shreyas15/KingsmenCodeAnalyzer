@@ -1,3 +1,12 @@
+/**
+ * 
+ */
+
+/**
+ * @author shreyas
+ *
+ */
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -27,8 +36,6 @@ public class Context {
 	 * 
 	 */
 	
-	//single line comments
-	private static final Pattern SL_COMMENT_RX = Pattern.compile("^(\\/\\*(.*)\\*\\/)|(\\/\\/(.*)$)");
 	//general Identifiers.
 	private static final Pattern IDENTIFIER_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)"); 
 	//variable with assignment
@@ -124,13 +131,6 @@ public class Context {
 	
 	//...*** private methods
 	
-	public boolean isOneLineComment(String fileName, String currentLine) throws IOException{
-		Matcher slComMatcher = SL_COMMENT_RX.matcher(currentLine);
-		if (slComMatcher.matches())
-			return true;
-		return false;
-	}
-
 	private static String getMultiLineString(String fileName2, String line2) throws IOException {
 		
 		BufferedReader bufferreader = new BufferedReader(new FileReader(fileName2));

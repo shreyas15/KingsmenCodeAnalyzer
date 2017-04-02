@@ -1,4 +1,4 @@
-alert ( goo ()); //function inside function 
+alert ( goo ()); 
 function foo(){
     let bar = function() {
         return 3;
@@ -6,16 +6,16 @@ function foo(){
 	var moo = 123;
 	
     return 5;
-    var bar = function() {  /* i like to test */
+    var bar = function() {  
         return 8;
     };
 }
-/* i like to test a lot */ if( a > b){
+ if( a > b){
 	return 1;
 }
 else 
 	dothis();
-// just another comment
+
 
 let aq=2;
 let doSomething = () => 

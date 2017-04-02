@@ -1,3 +1,12 @@
+/**
+ * 
+ */
+
+/**
+ * @author shreyas
+ *
+ */
+
 import java.io.BufferedReader;
 //import java.io.FileNotFoundException;
 //import java.io.FileNotFoundException;
@@ -14,7 +23,10 @@ public class Driver {
 	
 	public static void main(String[] args) throws IOException{
 		
-		String fileName = args[0];
+		FileCompactor fc = new FileCompactor(args[0]);
+		fc.removeComments();
+		String fileName = "compacted" + "_" + args[0];
+		
 		System.out.println("================================");
 		System.out.println("            WARNINGS            ");
 		System.out.println("================================\n");
