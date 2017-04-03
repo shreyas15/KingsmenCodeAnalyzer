@@ -1,3 +1,12 @@
+/***
+ * 
+ * This is the Super class for all other classes except the Driver.
+ * It defines the context of what we will analyze/ parse.  
+ * Contains fields like the objectName, line, lineNumber, ifOrElse flag. 
+ * Contains Regular Expressions for various patterns and tokens in the context. 
+ * 
+ */
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -25,6 +34,8 @@ public class Context {
 	 * 
 	 */
 	
+	//single line comments
+	protected static final Pattern SL_COMMENT_RX = Pattern.compile("^(\\/\\*(.*)\\*\\/)|(\\/\\/(.*)$)");
 	//general Identifiers.
 	protected static final Pattern IDENTIFIER_RX = Pattern.compile("([a-zA-Z_$][a-zA-Z0-9_$]*)"); 
 	//variable with assignment

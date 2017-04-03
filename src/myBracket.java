@@ -1,3 +1,9 @@
+/***
+ * 
+ * This class handles finding missing/ extra brackets throughout the file. 
+ * 
+ */
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -13,7 +19,6 @@ import java.util.Stack;
  * @author shreyas s bhat
  * 
  */
-
 
 
 public class myBracket extends Context{

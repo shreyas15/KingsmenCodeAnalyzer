@@ -1,3 +1,12 @@
+/***
+ * 
+ * This class contains methods related to Functions calls in the context. 
+ * Registers declared functions in the file and finds undefined function calls. 
+ * Also has a method to check and warn if a function declaration
+ * is missing curly bracket opening. 
+ * 
+ */
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -170,7 +179,7 @@ public class myFunction extends Context {
 	  *
 	  */
 	
-	public static void getUndefFunctions(String fileName) throws IOException{
+	public static void getUndecFunctions(String fileName) throws IOException{
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		String eachLine = "";
 		int lineNumber = 0;

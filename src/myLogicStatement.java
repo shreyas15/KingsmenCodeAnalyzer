@@ -1,3 +1,9 @@
+/***
+ * 
+ * This class contains methods to find single line else and if. 
+ * 
+ */
+
 import java.io.IOException;
 import java.util.regex.Matcher;
 

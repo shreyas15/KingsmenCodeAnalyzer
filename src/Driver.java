@@ -1,3 +1,13 @@
+/***
+ * 
+ * This is the main class that drives the tests. It has the following finder methods.
+ * 
+ * findUndeclaredFuncts - handles registering declared and undeclared functions
+ * findOneLineIfElse - handles registering if and else blocks that are one line. 
+ * findUnusedVariables - handles registering declared/defined variables and unused variables. 
+ * 
+ */
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -23,7 +33,7 @@ public class Driver {
 		System.out.println("            WARNINGS            ");
 		System.out.println("================================\n");
 		//System.out.println("------Unused Variables------\n");
-		printUnusedVariables(fileName);
+		findUnusedVariables(fileName);
 		
 		//System.out.println("\n------One Line if/else------\n");
 		findOneLineIfElse(fileName);
@@ -49,7 +59,7 @@ public class Driver {
 			for(myFunction t : functTokens){
 				t.registerFunctions(fileName);
 			}
-			myFunction.getUndefFunctions(fileName);
+			myFunction.getUndecFunctions(fileName);
 		}
 		catch (Exception e){
 			System.out.println(e.getMessage());
@@ -83,7 +93,7 @@ public class Driver {
 		}
 	}
 
-	private static void printUnusedVariables(String fileName) throws IOException{
+	private static void findUnusedVariables(String fileName) throws IOException{
 		List <myVariable> variables = new ArrayList <myVariable>();
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		String eachLine = "";

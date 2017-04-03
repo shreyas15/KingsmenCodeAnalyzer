@@ -1,10 +1,16 @@
+/***
+ * 
+ * This class has methods used to clean the file before it is parsed. 
+ * Currently used to remove all single line comments from the file. 
+ * 
+ */
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Scanner;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author shreyas s bhat
@@ -12,10 +18,7 @@ import java.util.regex.Pattern;
  */
 
 
-public class FileCompactor {
-	
-	//single line comments
-	private static final Pattern SL_COMMENT_RX = Pattern.compile("^(\\/\\*(.*)\\*\\/)|(\\/\\/(.*)$)");
+public class FileCompactor extends Context{
 	
 	private String fileName;
 

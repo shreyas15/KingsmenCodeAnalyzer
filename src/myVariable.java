@@ -1,3 +1,11 @@
+/***
+ * 
+ * This class has methods to register variables,
+ * update variable map to determine unused variables
+ * and handles reporting the messages to the console. 
+ *
+ */
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,8 +18,6 @@ import java.util.regex.Matcher;
  * @author shreyas s bhat
  *
  */
-
-
 
 public class myVariable extends Context{
 	
