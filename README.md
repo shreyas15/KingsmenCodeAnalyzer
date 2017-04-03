@@ -36,8 +36,8 @@ For command line execution:
 1) From the Command Prompt, navigate to the directory containing .java files, say C:\KingsmenCodeAnalyzer\ , by typing the cd command below. 
 Then Make a 'build' directory to store .class files
 
-        >cd c:\KingsmenCodeAnalyzer\
-        KingsmenCodeAnalyzer\> mkdir build
+        PWD\>cd C:\KingsmenCodeAnalyzer\
+        C:\KingsmenCodeAnalyzer\> mkdir build
         
 2) type the javac command below to compile it.
 
