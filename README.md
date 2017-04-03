@@ -7,27 +7,19 @@ o	The name of the variable
 o	The line number the variable is declared on 
 
 2) One line if/else statements that don’t have curly brackets and report:
-
 o	If it is an ‘if’ or an ‘else’ block
-
 o	The line number the if/else block is on
 
 3) Function calls that have not been declared and report:
 
 o	The line number the function call happens on
-
 o	The name of the function called
 
 4) Find any missing/extra curly brackets throughout the code and report:
-
     o	If it is a missing or an extra curly bracket
-    
 	If it is a missing curly bracket
-
     •	The line number and statement that started the opening curly bracket
-    
 	If it is an extra curly bracket
-
     •	The line number the extra bracket is on
     
 
