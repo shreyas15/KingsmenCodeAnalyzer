@@ -33,17 +33,19 @@ The code can then be compiled and executed using command line arguments or using
 The program takes one argument from the command line - the name of the javascript file. 
 
 For command line execution: 
-1) From the Command Prompt, navigate to the directory containing .java files, say C:\KingsmenCodeAnalyzer\ , by typing the cd command below.
+1) From the Command Prompt, navigate to the directory containing .java files, say C:\KingsmenCodeAnalyzer\ , by typing the cd command below. 
+Then Make a 'build' directory to store .class files
 
         C:\Users\username>cd c:\KingsmenCodeAnalyzer\
-
+        C:\Users\username>cd c:\KingsmenCodeAnalyzer\ mkdir build
+        
 2) type the javac command below to compile it.
 
-        \>javac src\*.java
+        >javac -d build src\*.java
 
 3) Use java command to execute your program. From the Command Prompt, type the java command below.
 
-        C:\KingsmenCodeAnalyzer\src\>java Driver <javascript_file_name.js>
+        C:\KingsmenCodeAnalyzer\>java -cp build Driver <javascript_file_name.js>
 
 
 ## Usage
