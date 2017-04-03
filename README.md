@@ -23,10 +23,31 @@ o	The name of the function called
     •	The line number the extra bracket is on
     
 
-
 ## Installation
 
-TODO: Describe the installation process
+Anybody who wants to download and play with the code:
+
+    your_git_directory% git clone https://github.com/shreyas15/KingsmenCodeAnalyzer.git
+    
+The code can then me compiled and executed using command line arguments or using an IDE such as Eclipse.
+
+The program takes one argument from the command line - the name of the javascript file. 
+
+For command line execution: 
+1) From the Command Prompt, navigate to the directory containing .java files, say C:\KingsmenCodeAnalyzer\ , by typing the cd command below.
+
+C:\Users\username>cd c:\KingsmenCodeAnalyzer\
+
+2) type the javac command below to compile it.
+
+\>javac src\*.java
+
+3) Use java command to execute your program.
+
+From the Command Prompt, type the java command below.
+
+C:\KingsmenCodeAnalyzer\src\>java Driver
+
 
 ## Usage
 
