@@ -18,6 +18,7 @@ import java.util.Stack;
 
 public class myBracket extends Context{
 
+	
 
 	public static Map<String, Integer> bracketCount = new HashMap<String, Integer>(); 
 	public static List <myBracket> openBrackets = new ArrayList <myBracket>();
@@ -31,6 +32,9 @@ public class myBracket extends Context{
 		this._columnNumber = colNum;
 	}
 	
+	public myBracket (String fileName){
+		this._fileName = fileName; 
+	}
 
 	/***
 	  *
@@ -52,9 +56,9 @@ public class myBracket extends Context{
 	  *
 	  */
 	
-	public static boolean findBracketBalance(String fileName) throws IOException {
+	public boolean findBracketBalance() throws IOException {
 
-		BufferedReader br = new BufferedReader(new FileReader(fileName));
+		BufferedReader br = new BufferedReader(new FileReader(this._fileName));
 		String eachLine = "";
 		int lineNumber = 0;
 		boolean balanced = true;
@@ -68,12 +72,12 @@ public class myBracket extends Context{
 			        char current = eachLine.charAt(i);
 			        if (current == '{'){
 			            stack.push(current);
-			            openBrackets.add(new myBracket(eachLine, fileName, "{", lineNumber, i));
+			            openBrackets.add(new myBracket(eachLine, this._fileName, "{", lineNumber, i));
 			            continue;
 			        }
 
 			        if (current == '}'){
-			        	closedBrackets.add(new myBracket(eachLine, fileName, "}", lineNumber, i));
+			        	closedBrackets.add(new myBracket(eachLine, _fileName, "}", lineNumber, i));
 			            if (stack.isEmpty()){
 			            	System.out.println("Found extra '}' at line " + lineNumber);
 			            	balanced = false;

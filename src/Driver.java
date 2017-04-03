@@ -32,7 +32,8 @@ public class Driver {
 		findUndeclaredFuncts(fileName);
 		
 		//System.out.println("\n------Missing/Extra Brackets------\n");
-		myBracket.findBracketBalance(fileName);
+		myBracket mb = new myBracket(fileName);
+		mb.findBracketBalance();
 	}
 	
 
