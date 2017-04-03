@@ -36,17 +36,17 @@ The program takes one argument from the command line - the name of the javascrip
 For command line execution: 
 1) From the Command Prompt, navigate to the directory containing .java files, say C:\KingsmenCodeAnalyzer\ , by typing the cd command below.
 
-C:\Users\username>cd c:\KingsmenCodeAnalyzer\
+        C:\Users\username>cd c:\KingsmenCodeAnalyzer\
 
 2) type the javac command below to compile it.
 
-\>javac src\*.java
+        \>javac src\*.java
 
 3) Use java command to execute your program.
 
 From the Command Prompt, type the java command below.
 
-C:\KingsmenCodeAnalyzer\src\>java Driver
+        C:\KingsmenCodeAnalyzer\src\>java Driver <javascript_file_name.js>
 
 
 ## Usage
