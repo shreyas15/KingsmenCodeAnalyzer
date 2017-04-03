@@ -41,7 +41,7 @@ Then Make a 'build' directory to store .class files
         
 2) type the javac command below to compile it.
 
-        >javac -d build src\*.java
+        C:\KingsmenCodeAnalyzer\>javac -d build src\*.java
 
 3) Use java command to execute your program. From the Command Prompt, type the java command below.
 
