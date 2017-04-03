@@ -42,9 +42,7 @@ For command line execution:
 
         \>javac src\*.java
 
-3) Use java command to execute your program.
-
-From the Command Prompt, type the java command below.
+3) Use java command to execute your program. From the Command Prompt, type the java command below.
 
         C:\KingsmenCodeAnalyzer\src\>java Driver <javascript_file_name.js>
 
