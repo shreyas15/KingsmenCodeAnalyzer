@@ -25,6 +25,10 @@ public class Driver {
 	
 	public static void main(String[] args) throws IOException{
 		
+		if (args.length < 1){
+			System.out.println("No input argument: Please supply a JavaScript filename. ");
+			return;
+		}
 		FileCompactor fc = new FileCompactor(args[0]);
 		fc.removeComments();
 		String fileName = "compacted" + "_" + args[0];
