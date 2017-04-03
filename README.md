@@ -47,6 +47,7 @@ Then Make a 'build' directory to store .class files
 
         C:\KingsmenCodeAnalyzer\>java -cp build Driver <javascript_file_name.js>
 
+NOTE: Among the list of files in src, the Driver class is the main class to run the code. 
 
 ## Usage
 
