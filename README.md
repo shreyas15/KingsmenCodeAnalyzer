@@ -28,7 +28,7 @@ Anybody who wants to download and play with the code:
 
     your_git_directory% git clone https://github.com/shreyas15/KingsmenCodeAnalyzer.git
     
-The code can then me compiled and executed using command line arguments or using an IDE such as Eclipse.
+The code can then be compiled and executed using command line arguments or using an IDE such as Eclipse.
 
 The program takes one argument from the command line - the name of the javascript file. 
 
