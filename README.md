@@ -1,17 +1,16 @@
 # KingsmenCodeAnalyzer
 Coding Challenge
 
-The program has been written using Java. It is a command line program that accepts as a command line argument which is the name of a JavaScript file. The code is parsed the fsdollowing items are searched for and warned for anomalies: 
+The program has been written using Java. It is a console application that accepts a command line argument which is the name of a JavaScript file. The code is parsed and the following items are searched for and warned if anomalies are found: 
 1) Declared variables that are not used in the code and report:
 o	The name of the variable
 o	The line number the variable is declared on 
 
-2) One line if/else statements that don’t have curly brackets and report:
+2) One line if/else statement that dosen't have curly brackets and report:
 o	If it is an ‘if’ or an ‘else’ block
 o	The line number the if/else block is on
 
 3) Function calls that have not been declared and report:
-
 o	The line number the function call happens on
 o	The name of the function called
 
