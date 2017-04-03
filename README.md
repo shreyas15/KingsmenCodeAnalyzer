@@ -16,7 +16,6 @@ o	The name of the function called
 
 4) Find any missing/extra curly brackets throughout the code and report:
     o	If it is a missing or an extra curly bracket
-    o	If you have extra time, more advanced tasks include:df
 	If it is a missing curly bracket
     •	The line number and statement that started the opening curly bracket
 	If it is an extra curly bracket
@@ -29,7 +28,7 @@ TODO: Describe the installation process
 
 ## Usage
 
-TODO: Write usage instructions
+Source code analysis is the automated testing of source code for the purpose of debugging a computer program or application before it is distributed or sold. 
 
 ## Contributing
 
