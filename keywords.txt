@@ -4,3 +4,11 @@ return
 alert
 for
 while
+switch
+case
+alert
+open
+close
+Array
+typeOf
+prompt
