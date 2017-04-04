@@ -139,7 +139,7 @@ public class Context {
 				if (line.contains(line2)){
 					fromLine = true;
 				}
-				int count = 1;
+				int count = 2;
 				while (line != null && fromLine == true && count > 0){
 					if (!line.isEmpty()){
 						stringbuilder.append(line);

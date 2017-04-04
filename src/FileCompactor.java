@@ -60,6 +60,7 @@ public class FileCompactor extends Context{
 			while(reader.hasNextLine()) {
 				newLine = reader.nextLine().toString().replaceAll("(\\/\\*(.*)\\*\\/)|(\\/\\/(.*)$)", "$1");
 				newLine = newLine.replaceAll("(\\/\\*(.*)\\*\\/)|(\\/\\/(.*)$)", "$3");
+				newLine = newLine.replaceAll("(\\<\\!\\-\\-(.*)\\-\\-\\>)", "");
 				writer.write(newLine + "\n");
 			}
 
