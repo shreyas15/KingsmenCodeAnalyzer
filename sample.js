@@ -3,7 +3,7 @@ let x = 2; <!-- Written by David Flanagan.  Copyright (c) 1996 O'Reilly & Associ
 <!-- This example is provided WITHOUT WARRANTY either expressed or implied.-->
 <!-- You may study, use, modify, and distribute it for any purpose.        -->
 <SCRIPT LANGUAGE="JavaScript1.1">
-
+doSomethingBad();
 // The constructor function.  Creates a cookie object for the specified
 // document,  with a specified name. 
 // attributes.  
@@ -33,7 +33,7 @@ function Cookie(document, name, hours, path, domain, secure)
 
 // This function is the store() method of the Cookie object
 function _Cookie_store()
-{
+
     // First, loop through the properties of the Cookie object and
     // put together the value of the cookie.  Since cookies use the
     // equals sign and semicolons as separators, we'll use colons

@@ -75,7 +75,7 @@ public class FileCompactor extends Context{
 
 	/***
 	  *
-	  * void isOneLineComment( )
+	  * boolean isOneLineComment(String currentLine)
 	  *
 	  * Summary of the isOneLineComment function:
 	  *
@@ -93,5 +93,5 @@ public class FileCompactor extends Context{
 			return true;
 		return false;
 	}
-
+	
 }

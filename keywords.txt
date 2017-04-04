@@ -1,0 +1,6 @@
+function
+if
+return
+alert
+for
+while

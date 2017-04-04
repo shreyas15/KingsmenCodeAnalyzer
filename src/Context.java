@@ -105,7 +105,7 @@ public class Context {
 	
 	/***
 	  *
-	  * void getMultiLineString( String fileName2, String line2 )
+	  * String getMultiLineString( String fileName2, String line2 )
 	  *
 	  * Summary of the getMultiLineString function:
 	  *
@@ -159,5 +159,37 @@ public class Context {
 		}
 	}
 
-
+	/***
+	  *
+	  * boolean isKeyword(String id)
+	  *
+	  * Summary of the isKeyword function:
+	  *
+	  *    The isKeyword function, takes a string to check if it is a keyword or not.
+	  *    It reads the keywords.txt file for the list of functions. 
+	  *
+	  * Parameters   : id - the identifier to be checked
+	  *
+	  * Return Value : true / false
+	  *
+	  */
+	
+	public static boolean isKeyword(String id) throws IOException{
+		BufferedReader buffer = new BufferedReader(new FileReader("keywords.txt"));
+		String word;
+		try{
+			while((word = buffer.readLine()) != null){
+				if (word.trim().equals(id.trim()))
+					return true;
+			}
+		}
+		catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		finally{
+			buffer.close();
+		}
+		return false;
 	}
+
+}

@@ -116,7 +116,7 @@ public class myFunction extends Context {
 
 	/***
 	  *
-	  * void isFunctMissingBracket( )
+	  * boolean isFunctMissingBracket( )
 	  *
 	  * Summary of the isFunctMissingBracket function:
 	  *
@@ -193,7 +193,7 @@ public class myFunction extends Context {
 				String found1 = matcher1.group().split("\\(")[0].trim();
 				if (found1.isEmpty()) continue;
 				boolean flag = funcNames.containsKey(found1)? true : false;
-				if (!flag && (!found1.equals("function")) && (!found1.equals("if")) && (!found1.equals("return")) && (!found1.equals("for")) && (!found1.equals("while"))){
+				if (!flag && (!isKeyword(found1))){
 					int counter = undecFuncNames.containsKey(found1) ? undecFuncNames.get(found1) : 0;
 					undecFuncNames.put(found1, counter + 1);
 					System.out.println(found1 + " : " + "was used before it was defined"  + " at line " + lineNumber);
@@ -206,6 +206,5 @@ public class myFunction extends Context {
 		}
 		br.close();
 	}
-	
 	
 }

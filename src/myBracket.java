@@ -43,7 +43,7 @@ public class myBracket extends Context{
 
 	/***
 	  *
-	  * void findBracketBalance( )
+	  * boolean findBracketBalance( )
 	  *
 	  * Summary of the findBracketBalance function:
 	  *

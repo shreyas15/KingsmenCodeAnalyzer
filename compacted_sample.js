@@ -3,7 +3,7 @@ let x = 2;  var xyz = 2;
 
 
 <SCRIPT LANGUAGE="JavaScript1.1">
-
+doSomethingBad();
 
 
 
@@ -33,7 +33,7 @@ function Cookie(document, name, hours, path, domain, secure)
 
 
 function _Cookie_store()
-{
+
     
     
     
