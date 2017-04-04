@@ -48,7 +48,8 @@ Then Make a 'build' directory to store .class files
         C:\KingsmenCodeAnalyzer\>java -cp build Driver <javascript_file_name.js>
 
 NOTE: Among the list of files in src, the Driver class is the main class to run the code. 
-keywords.txt can be edited to include more in-built library functions that shouldn't be considered while checking for undeclared functions.
+
+The "keywords.txt" file can be edited to include more in-built library function names that shouldn't be considered while checking for undeclared functions.
 
 ## Usage
 
